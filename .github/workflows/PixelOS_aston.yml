@@ -30,7 +30,7 @@ jobs:
     - name: Build Kernel with ksu
       run: |
         cd kernel/oneplus/sm8550
-        ./build_sm8550 --clean --ksu
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu.zip
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
         cd -
