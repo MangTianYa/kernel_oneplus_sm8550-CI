@@ -30,6 +30,12 @@ jobs:
     - name: Build Kernel with ksu
       run: |
         cd kernel/oneplus/sm8550
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
-        cd -
+        export ARCH=arm64
+        export CROSS_COMPILE=arch/arm64/configs/vendor/oplus/aston.config    # 或者 clang 路径
+        export LLVM=1
+        export LLVM_IAS=1
+        make -j$(nproc) O=out aston.config  
+        make -j$(nproc) O=out
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+
