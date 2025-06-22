@@ -35,7 +35,6 @@ jobs:
         export CROSS_COMPILE=arch/arm64/configs/vendor/oplus/aston.config    # 或者 clang 路径
         export LLVM=1
         export LLVM_IAS=1
-        make -j$(nproc) O=out aston.config  
         make -j$(nproc) O=out
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
 
