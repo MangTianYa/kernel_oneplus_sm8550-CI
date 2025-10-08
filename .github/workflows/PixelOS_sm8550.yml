@@ -1,11 +1,11 @@
-name: PixelOS_Kernel_CI-benz
+name: PixelOS_Kernel_CI-aston
 
 on:
   workflow_dispatch:
 
 jobs:
   PixelOS_Kernel_CI:
-    name: PixelOS Kernel CI (benz)
+    name: PixelOS Kernel CI
     runs-on: self-hosted
     steps:
 
@@ -24,13 +24,13 @@ jobs:
         rm -rf ${GITHUB_WORKSPACE}/*.zip
         cd kernel/oneplus/sm8550
         SUBLEVEL=$(grep "^SUBLEVEL =" Makefile | awk '{print $3}')
-        REL_NAME="OPNCE4-v5.15.${SUBLEVEL}-$(date +"%Y%m%d")"
+        REL_NAME="PixelOS_OPSM8550-v5.15.${SUBLEVEL}-$(date +"%Y%m%d")"
         echo "REL_NAME=${REL_NAME}" >> $GITHUB_ENV
 
     - name: Build Kernel with ksu
       run: |
         cd kernel/oneplus/sm8550
-        build_sm8550 --clean --ksu --benz
+        build_sm8550 --clean --ksu
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu.zip
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
         cd -
@@ -38,7 +38,7 @@ jobs:
     - name: Build Kernel with ksu-next
       run: |
         cd kernel/oneplus/sm8550
-        build_sm8550 --clean --ksu-next --benz
+        build_sm8550 --clean --ksu-next
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu-next.zip
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
         cd -
@@ -46,7 +46,7 @@ jobs:
     - name: Build Kernel with ksu-next + susfs
       run: |
         cd kernel/oneplus/sm8550
-        build_sm8550 --clean --ksu-next-susfs --benz
+        build_sm8550 --clean --ksu-next-susfs
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu-next-susfs.zip
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
         cd -
