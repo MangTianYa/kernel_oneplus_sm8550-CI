@@ -14,6 +14,13 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: Python3
+      run: |
+        sudo apt update
+        sudo apt install python3
+        sudo apt install python3-dev
+        python3 --version
+
     - name: Clone Kernel and Dependencies
       run: |
         git clone https://github.com/PixelOS-Devices/android_kernel_oneplus_sm8550.git --depth=1 -b sixteen kernel/oneplus/sm8550
