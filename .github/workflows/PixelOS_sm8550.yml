@@ -26,6 +26,9 @@ jobs:
       run: |
         git clone https://github.com/PixelOS-Devices/android_kernel_oneplus_sm8550.git --depth=1 -b sixteen kernel/oneplus/sm8550
         git clone https://github.com/PixelOS-Devices/android_kernel_oneplus_sm8550-modules.git --depth=1 -b sixteen kernel/oneplus/sm8550-modules
+        cd kernel/oneplus/sm8550
+        chmod +x build.sh
+        ./build.sh
     
     - name: Setup release name
       run: |
