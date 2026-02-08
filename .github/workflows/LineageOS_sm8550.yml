@@ -19,39 +19,58 @@ jobs:
         git clone https://github.com/LineageOS/android_kernel_oneplus_sm8550.git --depth=1 -b lineage-23.2 kernel/oneplus/sm8550
         git clone https://github.com/LineageOS/android_kernel_oneplus_sm8550-modules.git --depth=1 -b lineage-23.2 kernel/oneplus/sm8550-modules
     
-    - name: Setup release name
+    - name: Setup release name and notes
       run: |
         rm -rf ${GITHUB_WORKSPACE}/*.zip
         cd kernel/oneplus/sm8550
         SUBLEVEL=$(grep "^SUBLEVEL =" Makefile | awk '{print $3}')
         REL_NAME="LineageOS_OPSM8550-v5.15.${SUBLEVEL}-$(date +"%Y%m%d")"
         echo "REL_NAME=${REL_NAME}" >> $GITHUB_ENV
+        : > "${GITHUB_WORKSPACE}/release_notes.txt"
+        KERNEL_SHA=$(git rev-parse HEAD)
+        echo "Kernel HEAD: LineageOS/android_kernel_oneplus_sm8550@${KERNEL_SHA}" >> "${GITHUB_WORKSPACE}/release_notes.txt"
+        cd ../../..
 
     - name: Build Kernel with ksu
       run: |
         cd kernel/oneplus/sm8550
         build_sm8550 --clean --ksu
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu.zip
+        cd drivers/kernelsu
+        SU_HEAD=$(git rev-parse HEAD)
+        echo "KernelSU HEAD: tiann/KernelSU@${SU_HEAD}" >> "${GITHUB_WORKSPACE}/release_notes.txt"
+        cd ../..
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
-        cd -
+        cd ../../..
 
     - name: Build Kernel with ksu-next
       run: |
         cd kernel/oneplus/sm8550
         build_sm8550 --clean --ksu-next
         mv kernel.zip ${GITHUB_WORKSPACE}/ksu-next.zip
+        cd drivers/kernelsu
+        SU_HEAD=$(git rev-parse HEAD)
+        echo "KernelSU-Next HEAD: KernelSU-Next/KernelSU-Next@${SU_HEAD}" >> "${GITHUB_WORKSPACE}/release_notes.txt"
+        cd ../..
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
-        cd -
-  
+        cd ../../..
+
     - name: Build Kernel with resukisu
       run: |
         cd kernel/oneplus/sm8550
         build_sm8550 --clean --resukisu
         mv kernel.zip ${GITHUB_WORKSPACE}/resukisu.zip
+        cd drivers/kernelsu
+        SU_HEAD=$(git rev-parse HEAD)
+        echo "ResuKiSu HEAD: ReSukiSU/ReSukiSU@${SU_HEAD}" >> "${GITHUB_WORKSPACE}/release_notes.txt"
+        cd ../..
         git clean -fdx && find . -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/.git" \; -print | xargs rm -rf && git reset --hard
-        cd -
+        cd ../../..
 
     - name: Create GitHub Release
       run: |
         cd ${GITHUB_WORKSPACE}
-        gh release create "$REL_NAME" --title "$REL_NAME" --notes "" ksu.zip ksu-next.zip resukisu.zip
+        gh release create "$REL_NAME" \
+          --title "$REL_NAME" \
+          -F "${GITHUB_WORKSPACE}/release_notes.txt" \
+          ksu.zip ksu-next.zip resukisu.zip
